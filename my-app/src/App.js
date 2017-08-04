@@ -1,26 +1,35 @@
 import React, { Component } from 'react';
 
 import './App.css';
+import itemPreview from './itemPreview'
+import JsonTable  from 'react-json-table'
+
 // process
 
 class App extends Component {
   constructor(props){
       super(props)
-      this.state= {numClicks: 0, data:"_blank"}
+      this.state= {count: 0, details:[]}
+      // this.clickHandler = this.clickHandler.bind(this)
 
 }
-click(){
-// const payload = {...}; // post call body
+// clickHandler(){
+componentDidMount(){
+      var self = this
+      const payload = {
+      "path": ["getPortfolioList"]
+      };
       var http = require('https');
       const options = {
           hostname: 'greatapi.azurewebsites.net',
           port: 443,
           path: '/api/PwProxy',
           method: 'post',
-          headers : {},
+          headers : {'content-type': 'application/json',
+                'Content-Length': Buffer.byteLength(JSON.stringify(payload))},
           }; // post call settings
 
-          console.log("Here!")
+
       const request = http.request(options, function(response: any) {
       console.log('STATUS: ' + response.statusCode);
       console.log('HEADERS: ' + JSON.stringify(response.headers));
@@ -30,26 +39,25 @@ click(){
       response.on('end', function() {
       const body = JSON.parse(stringResponse);
       if (response.statusCode === 200) {
-        console.log(body);
+      var items = body
+      self.setState({details:items})
+      console.log(body);
       } else {
         console.log("error");
       // error
       }
       });
       });
-      // request.on('error', (error) => {
-      // // error in the call
-      // });
-      // request.write(.JSON.stringify(payload));
+      request.write(JSON.stringify(payload));
       request.end();
+      this.setState({count:this.state.count + 1})
 
 }
 render() {
  return  (
   <div>
-      <button onClick={this.click.bind(this)}>Call API</button>
-      // {this.state.numClicks} <br/>
-      // {this.state.data}
+
+    <div><JsonTable rows={this.state.details}  /></div>
   </div>
  );
 }
