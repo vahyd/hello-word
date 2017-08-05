@@ -5,7 +5,7 @@ import { mount } from 'enzyme';
 
 import App from './App';
 
-describe('<A[[]] />', () => {
+describe('<App/>', () => {
   it('calls componentDidMount', () => {
     sinon.spy(App.prototype, 'componentDidMount');
     const wrapper = mount(<App />);
